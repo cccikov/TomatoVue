@@ -6,7 +6,6 @@
 			div.textContainer.copy(v-show="show") {{comment_copy}}
 
 		a(href="javascript:void(0)",@click="submit").addBtn 评论
-		//- p {{comment}}
 </template>
 
 
@@ -102,7 +101,6 @@ export default {
 	transition: all .5s;
 }
 .move-enter {
-	opacity: 0;
 }
 .move-enter-to {
 	transform: translate(0px,-10px) scale(0.9,0.9);
@@ -116,7 +114,6 @@ export default {
 	transform: translate(0px,-10px) scale(0.9,0.9);
 }
 .move-leave-to {   
-	opacity: 0;
 	transform: translate(0px,150px) scale(1,1);
 }
 </style>
