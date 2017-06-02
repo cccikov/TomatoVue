@@ -344,3 +344,190 @@ module.exports = {
         ...
         </style>
         ```
+
+> #### 引入vue-router
+
+> ##### 安装
+
+    ```
+        npm install vue-router
+    ```
+
+> ##### 分配路由
+
+    - 页面级有两种写法
+    - 写法一
+        ```
+        // index.html
+        <div id="app">
+            <router-view></router-view>
+        </div>
+        ```
+    - 写法二
+        ```
+        // main.vue
+        <template>
+            <div>
+                <router-view></router-view>
+            </div>
+        </template>
+        ```
+    
+    - 引入vue-router
+        ```
+        import Vue from 'vue'
+        import VueRouter from 'vue-router'
+
+        Vue.use(VueRouter)
+        //  如果使用模块化机制编程，導入Vue和VueRouter，要调用 Vue.use(VueRouter)
+
+        const router = new Router({
+            routes: [
+                {
+                    path: '/comment',
+                    component: Comment
+                }, { 
+                    path: '/about',
+                    component: About
+                }
+            ]
+        })
+
+        new Vue({
+            router,
+            el: '#app'
+        })
+        ```
+
+> ##### 动态路由
+
+    - 响应路由参数的变化（渲染相同的组件才会响应）
+
+        ```
+            new Vue({
+                router,
+                el: '#app',
+                watch: {
+                    '$route' (to, from) {
+                        console.log('catch the new request')
+                    }
+                }
+            })
+            
+        ```
+    
+    - 动态匹配
+        ```
+            routes: [
+                { path: '/' },
+
+                // params ar    e denoted with a colon ":"
+                { path: '/params/:foo/:bar' },
+
+                // a param can be made optional by adding "?"
+                { path: '/optional-params/:foo?' },
+
+                // a param can be followed by a regex pattern in parens
+                // this route will only be matched if :id is all numbers
+                { path: '/params-with-regex/:id(\\d+)' },
+
+                // asterisk can match anything
+                { path: '/asterisk/*' },
+
+                // make part of th path optional by wrapping with parens and add "?"
+                { path: '/optional-group/(foo/)?bar' }
+            ]
+        ```
+
+> ##### router 跳转
+
+    ```
+        // 字符串
+        router.push('home')
+
+        // 对象
+        router.push({ path: 'home' })
+
+        // 命名的路由
+        router.push({ name: 'user', params: { userId: 123 }})
+
+        // 带查询参数，变成 /register?plan=private
+        router.push({ path: 'register', query: { plan: 'private' }})
+    ```
+    ```
+        routes: [
+            {
+            path: '/user/:userId',
+            name: 'user',
+            component: User
+            }
+        ]//路由命名
+
+        <router-link :to="{name:'path', {query:{id:1}}}">jump</router-link>
+    ```
+
+> ##### 重定向
+
+    ```
+    const router = new VueRouter({
+        routes: [
+            { path: '/a', redirect: '/b' }
+        ]
+    })
+    ```
+    - 访问/a时，url会变为/b,同时路由匹配/b
+
+> ##### 别名
+
+    ```
+    const router = new VueRouter({
+        routes: [
+            { path: '/a', component: A, alias: '/b' }
+        ]
+    })
+    ```
+    - 为/a添加了一个别名/b，当访问/b时，url不变，但是路由匹配/a
+
+> ##### 导航钩子
+
+    - 全局
+        ```
+        const router = new VueRouter({ ... })
+
+        router.beforeEach((to, from, next) => {
+        // ...
+        })
+        ```
+        - next(): 进行管道中的下一个钩子。如果全部钩子执行完了，则导航的状态就是 confirmed （确认的）。
+
+        - next(false): 中断当前的导航。如果浏览器的 URL 改变了（可能是用户手动或者浏览器后退按钮），那么 URL 地址会重置到 from 路由对应的地址。
+
+        - next('/') 或者 next({ path: '/' }): 跳转到一个不同的地址。当前的导航被中断，然后进行一个新的导航。
+    
+    - 路由内
+    
+        ```
+        const router = new VueRouter({
+            routes: [
+                {
+                path: '/foo',
+                component: Foo,
+                beforeEnter: (to, from, next) => {
+                    // ...
+                }
+                }
+            ]
+        })
+        ```
+    - 组件内
+
+        ```
+            beforeRouteEnter
+            beforeRouteUpdate (2.2 新增)
+            beforeRouteLeave
+        ```
+
+> ##### 疑惑
+
+    - 路由懒加载
+    - 数据获取-导航完成之前？

@@ -5,7 +5,14 @@
     <title>vue-test</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <router-link to="/comment">评论1</router-link>
+      <router-link to="/commentleft">评论2</router-link>
+      <router-link to="/checkbox">checkbox</router-link>
+      <router-link to="/transfer">transfer</router-link>
+      <router-link to="/textbox">textbox</router-link>
+      <router-view></router-view>
+    </div>
     <script src="/dist/index.main.build.js"></script>
   </body>
 </html>

@@ -4,7 +4,7 @@
 			textarea(type="text",rows="4",v-model="comment")
 		transition(name="move")
 			div.textContainer.copy(v-show="show") {{comment_copy}}
-
+	
 		a(href="javascript:void(0)",@click="submit").addBtn 评论
 </template>
 

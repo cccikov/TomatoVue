@@ -22,6 +22,11 @@ export default {
       "clear":0
     }
   },
+  watch: {
+    '$route' (to, from) {
+      console.log('left catch the change')
+    }
+  },
   components:{
     AddComment,
     CommentArea

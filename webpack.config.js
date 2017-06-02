@@ -45,6 +45,10 @@ module.exports = {
       {
         test: /\.json$/,
         loader: 'json-loader'
+      },
+      {
+        test:/\.(woff|svg|eot|ttf)\??.*$/,
+        loader: 'url-loader?name=fonts/[name].[md5:hash:hex:7].[ext]'
       }
     ]
   },
