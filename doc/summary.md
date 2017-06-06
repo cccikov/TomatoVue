@@ -531,3 +531,13 @@ module.exports = {
 
     - 路由懒加载
     - 数据获取-导航完成之前？
+
+> #### 坑
+
+    - label里面有input会自动把点击事件转移到input上，就算没有为label绑定点击事件，点击label任意位置，都如同直接点击input一样
+
+    - 这个错已经犯了第三回了，Object.assign(a,b)会改变a，应该写成Object.assign({}, a, b)
+
+    - index从1开始，导致checkbox回调中_data中序号与数组的索引大1
+
+    - 设置数组某个索引的值没有用this.$set，导致computed中无法捕捉数组值的改变

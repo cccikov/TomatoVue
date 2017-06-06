@@ -3,11 +3,11 @@
     <!--可选-->
     <div class="transfer-select">
       <div class="total">
-        <checkbox :data="sourceTotal" @cbChange="sourceChange" inline="true"></checkbox>
+        <checkbox :data="sourceTotal.data" :disabled="sourceTotal.disabled" @cbChange="sourceChange" :select="sourceTotal.data.select" inline="true"></checkbox>
         <span>Source</span>
       </div>
       <div class="search">
-        <textbox placeholder="Search here..."></textbox>        
+        <textbox placeholder="Search here..." @input="selectInSearch" @search="selectSearch"></textbox>        
       </div>
       <ul class="content">
         <li v-for="(item,index) in select" :key="index">
@@ -17,17 +17,17 @@
     </div>  
     <!--操作-->
     <div class="operate">
-      <a href="javascript:void(0)" class="left cpf-icon-ic_arrowleft"></a>
-      <a href="javascript:void(0)" class="right cpf-icon-ic_arrowright"></a>
+      <a href="javascript:void(0)" class="left cpf-icon-ic_arrowleft" :class="{arrowleft_active: arrowleft}" @click="movetoleft"></a>
+      <a href="javascript:void(0)" class="right cpf-icon-ic_arrowright" :class="{arrowright_active: arrowright}" @click="movetoright"></a>
     </div>
     <!--已选-->
     <div class="transfer-selected">
       <div class="total">
-        <checkbox :data="targetTotal" @cbChange="targetChange" inline="true"></checkbox>
+        <checkbox :data="targetTotal.data" :disabled="targetTotal.disabled" @cbChange="targetChange" :select="targetTotal.data.select" inline="true"></checkbox>
         <span>Target</span>
       </div>
       <div class="search">
-        <textbox placeholder="Search here..."></textbox>        
+        <textbox placeholder="Search here..." @input="selectedInSearch" @search="selectedSearch"></textbox>        
       </div>
       <ul class="content">
         <li v-for="(item,index) in selected" :key="index">
@@ -47,36 +47,113 @@ export default {
   data () {
     return {
       select: [],
+      totalSelect: [],
       selected: [],
-      sourceTotal: {},
-      targetTotal: {}
+      totalSelected: [],
+      sourceTotal: {
+        data: {},
+        disabled: false
+      },
+      targetTotal: {
+        data: {},
+        disabled: false
+      },
+      selectSearchText: '',
+      selectedSearchText: ''
     }
   },
   mounted () {
     const items = 10
     const config = { disabled: false, select: false }
-    for(let i=1;i<items;i++){
-      this.select.push(Object.assign({}, config, { text:`item${i}`, value: i }))
-      this.selected.push(Object.assign({}, config, { text:`item${i+10}`, value: i + 10 }))
+    for(let i=0;i<items;i++){
+      this.select.push(Object.assign( {}, config, { text:`item${i+1}`, value: i }))
+      this.selected.push(Object.assign( {}, config, { text:`item${i+11}`, value: i + 11 }))
     }
-    this.sourceTotal = Object.assign(config,{ text: `${items} items`, value: 'sourceTotal' })
-    this.targetTotal = Object.assign(config,{ text: `${items} items`, value: 'targetTotal' })
+    this.sourceTotal.data = Object.assign( {}, config, { text: `${items} items`, value: 'sourceTotal' })
+    this.targetTotal.data = Object.assign( {}, config, { text: `${items} items`, value: 'targetTotal' })
   },
   components: {
     textbox,
     checkbox
   },
+  computed: {
+    arrowright () {
+      const select = this.select.some(x => x.select)
+      return this.sourceTotal.data.select || select
+    },
+    arrowleft () {
+      const select = this.selected.some(x => x.select)
+      return this.targetTotal.data.select || select
+    }
+  },
+  watch: {
+    select () {          // 只要有一个不是disabled，只要有一个不是select
+      this.sourceTotal.disabled = this.select.every(x => x.disabled)
+      this.sourceTotal.data.select = this.select.every(x => x.select)
+    },
+    selected () {
+      this.targetTotal.disabled = this.selected.every(x => x.disabled)
+      this.targetTotal.data.select = this.selected.every(x => x.select)
+    }
+  },
   methods: {
     sourceChange (_data) {
-
+      this.sourceTotal.data = _data
+      for(let v of this.select) {
+        v.select = this.sourceTotal.data.select
+      }
     },
     targetChange (_data) {
+      this.targetTotal.data = _data
+      for(let v of this.selected) {
+        v.select = this.targetTotal.data.select
+      }
+    },
+    selectChange (_data) {
+      this.$set(this.select, _data.value, _data)
+    },
+    selectedChange (_data) {
+      this.$set(this.selected, _data.value - 11, _data)
+    },
+    movetoleft () {
+      if (!this.arrowleft) {
+        return
+      }
+      const selected = this.selected.filter(x => !x.select && !x.disabled)
+      const arr = this.selected.filter(x => { 
+        if (x.select && !x.disabled) {
+          x.select = false
+          return true
+        }
+      })
+      this.selected = selected
+      this.select = this.select.concat(arr)
+    },
+    movetoright () {
+      if (!this.arrowright) {
+        return
+      }
+      const select = this.select.filter(x => !x.select && !x.disabled)
+      const arr = this.select.filter(x => { 
+        if (x.select && !x.disabled) {
+          x.select = false
+          return true
+        }
+      })
+      this.select = select
+      this.selected = this.selected.concat(arr)
+    },
+    selectInSearch (text) {
+    },
+    selectedInSearch (text) {
 
     },
-    selectChange () {
+    selectSearch (text) {
 
     },
-    
+    selectedSearch (text) {
+
+    }
   }
 }
 </script>
@@ -133,8 +210,12 @@ export default {
       text-decoration: none;
       display: block;
       cursor: no-drop;
-      &.active{
+      &.arrowleft_active,
+      &.arrowright_active{
+        color: #fff;
         cursor: pointer;
+        background: #288add;
+        border-color: #288add;
       }
       &.left{
         margin-bottom:4px;

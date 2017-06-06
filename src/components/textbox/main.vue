@@ -3,7 +3,7 @@
     <div class="text-container">
       <span class="icon" :class="prefixname"></span>
       <input v-if="disabled" type="text" :class="inputclass" name="" v-model="text" :placeholder="placeholder" readonly>
-      <input v-else type="text" :class="inputclass" name="" v-model="text" @focus="focus" @blur="blur" :placeholder="placeholder">
+      <input v-else type="text" :class="inputclass" name="" v-model="text" @focus="focus" @blur="blur" :placeholder="placeholder" @input="input" @change="change">
       <span class="search" :class="suffixname" @click="search"></span>
     </div>
   </div>
@@ -35,6 +35,12 @@ export default {
     },
     blur () {
       this.$emit('blur')
+    },
+    input () {
+      this.$emit('input')
+    },
+    change () {
+      this.$emit('change')
     },
     search () {
       if (this.disabled) {
